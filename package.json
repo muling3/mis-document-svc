@@ -29,7 +29,7 @@
   "devDependencies": {
     "@nestjs/cli": "^10.4.5",
     "@nestjs/schematics": "^10.1.4",
-    "@types/node": "^20.14.0",
+    "@types/node": "^22.10.0",
     "typescript": "^5.4.5",
     "ts-node": "^10.9.2",
     "ts-loader": "^9.5.1"
