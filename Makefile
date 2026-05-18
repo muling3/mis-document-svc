@@ -2,7 +2,7 @@ SERVICE := document-service
 IMAGE   := mis/$(SERVICE)
 TAG     ?= dev
 
-.PHONY: help install install-standalone auth dev build start test lint typecheck \
+.PHONY: help install install-standalone install-azure auth dev build start test lint typecheck \
         prisma-generate prisma-migrate prisma-deploy seed \
         docker-build clean
 
@@ -23,8 +23,12 @@ install-standalone:    ## Install deps + @mis/* from GitHub (no package.json edi
 	  git+ssh://git@github.com/muling3/mis-pkg-circuit-breaker.git \
 	  git+ssh://git@github.com/muling3/mis-proto.git
 
-auth:                  ## No-op in PoC (no Azure Artifacts feed)
-	@echo "auth: skipped — PoC uses npm workspaces"
+auth:                  ## Authenticate npm to the @mis Azure Artifacts feed
+	@test -f .npmrc || { echo "no .npmrc — cp .npmrc.example .npmrc and set <org>/<project>/<feed>"; exit 1; }
+	npx -y vsts-npm-auth -config .npmrc
+
+install-azure: auth    ## Install @mis/* from the Azure Artifacts feed (.npmrc)
+	npm install
 
 dev:                   ## Run in watch mode
 	npm run start:dev
