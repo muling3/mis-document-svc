@@ -23,9 +23,17 @@ install-standalone:    ## Install deps + @mis/* from GitHub (no package.json edi
 	  git+ssh://git@github.com/muling3/mis-pkg-circuit-breaker.git \
 	  git+ssh://git@github.com/muling3/mis-proto.git
 
-auth:                  ## Authenticate npm to the @mis Azure Artifacts feed
+auth:                  ## Authenticate npm to the @mis Azure feed (cross-platform)
 	@test -f .npmrc || { echo "no .npmrc — cp .npmrc.example .npmrc and set <org>/<project>/<feed>"; exit 1; }
-	npx -y vsts-npm-auth -config .npmrc
+	@if [ -n "$${AZURE_NPM_TOKEN:-}" ]; then \
+	  echo "auth: AZURE_NPM_TOKEN set — npm reads it from .npmrc (no action needed)"; \
+	elif uname -s 2>/dev/null | grep -qiE 'mingw|msys|cygwin|windows'; then \
+	  vsts-npm-auth -config .npmrc; \
+	else \
+	  echo "auth: no credentials. Linux/macOS/CI:  export AZURE_NPM_TOKEN=<base64 Azure PAT>"; \
+	  echo "      Windows: install vsts-npm-auth, then re-run 'make auth'"; \
+	  exit 1; \
+	fi
 
 install-azure: auth    ## Install @mis/* from the Azure Artifacts feed (.npmrc)
 	npm install
