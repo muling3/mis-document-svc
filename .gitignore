@@ -5,3 +5,7 @@ dist/
 .env.local
 *.log
 .npmrc
+
+# Local FS quarantine/canonical/forensics for the document-upload PoC
+# (workflow doc §11.5). In prod these are S3 buckets.
+var/
